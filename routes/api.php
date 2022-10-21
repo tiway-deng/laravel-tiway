@@ -14,11 +14,18 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::post('user/login', 'App\Http\Controllers\UserController@login');
+Route::post('user/register', 'App\Http\Controllers\UserController@register');
+
+Route::group(['middleware' => 'jwt','prefix'=>'user'], function () {
+    Route::get('info', 'App\Http\Controllers\UserController@getUser');
 });
 
-Route::get('/create-user', function () {
-    $user = \App\Service\GrpcUser::CreateUser('小小天','13566696636','123456');
-    dd($user);
-});
+//Route::get('user/test', function(){
+//    $user = \App\Service\GrpcUser::getUserById(2);
+//    dd($user);
+//});
+
+
+
+

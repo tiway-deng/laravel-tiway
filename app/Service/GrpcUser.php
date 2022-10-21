@@ -7,17 +7,23 @@ namespace App\Service;
 use Grpc\ChannelCredentials;
 use User\V1\CreateUserInfo;
 use User\V1\IdRequest;
+use User\V1\MobileRequest;
 use User\V1\PasswordCheckInfo;
 use User\V1\UserClient;
 
 class GrpcUser
 {
+    private static $client;
+
     private static function createClient()
     {
-        //docker 请求宿主机
-        return new UserClient("host.docker.internal:9001", [
-            "credentials" => ChannelCredentials::createInsecure()
-        ]);
+        if (!(self::$client instanceof UserClient)) {
+            self::$client = new UserClient("host.docker.internal:9001", [
+                "credentials" => ChannelCredentials::createInsecure()
+            ]);
+        }
+
+        return self::$client;
     }
 
     /**
@@ -58,6 +64,34 @@ class GrpcUser
         $request = new IdRequest();
         $request->setId($id);
         $call = self::createClient()->GetUserById($request);
+        list($response, $status) = $call->wait();
+
+        $user = [];
+        if ($response) {
+            $user = [
+                'id' => $response->getId(),
+                'name' => $response->getName(),
+                'mobile' => $response->getMobile(),
+                'nickname' => $response->getNickname(),
+                'email' => $response->getEmail(),
+                'password' => $response->getPassword(),
+                'status' => $response->getStatus(),
+                'created_at' => $response->getCreatedAt(),
+            ];
+        }
+
+        return $user;
+    }
+
+    /**
+     * @param string $mobile
+     * @return array
+     */
+    public static function getUserByMobile(string $mobile)
+    {
+        $request = new MobileRequest();
+        $request->setMobile($mobile);
+        $call = self::createClient()->GetUserByMobile($request);
         list($response, $status) = $call->wait();
 
         $user = [];
