@@ -116,7 +116,7 @@ class GrpcUser
      * @param string $password
      * @return bool
      */
-    public static function checkoutUserPassword(string $mobile,string $password)
+    public static function checkoutUserPassword(string $mobile, string $password)
     {
         $request = new PasswordCheckInfo();
         $request->setMobile($mobile);

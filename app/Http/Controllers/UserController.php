@@ -15,14 +15,14 @@ class UserController extends Controller
      */
     public function register(Request $request)
     {
-        $input = $request->only('nickname','mobile', 'password');
+        $input = $request->only('nickname', 'mobile', 'password');
         //用户手机号码是否已注册
         $user = GrpcUser::getUserByMobile($input['mobile']);
         if (isset($user['id'])) {
             throw new \Exception('手机号码已被注册');
         }
         //创建用户
-        $user = GrpcUser::CreateUser($input['nickname'],$input['mobile'],$input['password']);
+        $user = GrpcUser::CreateUser($input['nickname'], $input['mobile'], $input['password']);
         if (!isset($user['id'])) {
             throw new \Exception('创建失败');
         }
@@ -42,7 +42,7 @@ class UserController extends Controller
     {
         $input = $request->only('mobile', 'password');
         //是否已经存在相同手机号码
-        $isLogin = GrpcUser::checkoutUserPassword($input['mobile'],$input['password']);
+        $isLogin = GrpcUser::checkoutUserPassword($input['mobile'], $input['password']);
         if (!$isLogin) {
             throw new \Exception('账号或密码错误');
         }
@@ -50,7 +50,7 @@ class UserController extends Controller
         $user = GrpcUser::getUserByMobile($input['mobile']);
         //jwt
         if (isset($user['id'])) {
-            $token = Jwt::createToken($user['id'],$user['nickname']);
+            $token = Jwt::createToken($user['id'], $user['nickname']);
         }
 
         return response()->json([
@@ -65,7 +65,7 @@ class UserController extends Controller
      */
     public function getUser(Request $request)
     {
-        $userId =$request->attributes->get('user_id');
+        $userId = $request->attributes->get('user_id');
         $user = GrpcUser::getUserById($userId);
         return response()->json(['user' => $user]);
     }
