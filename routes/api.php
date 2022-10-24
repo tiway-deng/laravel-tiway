@@ -17,14 +17,16 @@ use Illuminate\Support\Facades\Route;
 Route::post('user/login', 'App\Http\Controllers\UserController@login');
 Route::post('user/register', 'App\Http\Controllers\UserController@register');
 
-Route::group(['middleware' => 'jwt','prefix'=>'user'], function () {
+Route::group(['middleware' => 'jwt', 'prefix' => 'user'], function () {
     Route::get('info', 'App\Http\Controllers\UserController@getUser');
 });
 
-//Route::get('user/test', function(){
-//    $user = \App\Service\GrpcUser::getUserById(2);
-//    dd($user);
-//});
+Route::get('user/test', function () {
+
+        $user = \App\Service\GrpcUser::getUserById(1);
+        dd($user);
+
+    });
 
 
 

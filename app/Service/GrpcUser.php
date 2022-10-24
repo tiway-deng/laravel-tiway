@@ -15,10 +15,18 @@ class GrpcUser
 {
     private static $client;
 
+    /**
+     * @return UserClient
+     * @throws \Exception
+     */
     private static function createClient()
     {
         if (!(self::$client instanceof UserClient)) {
-            self::$client = new UserClient("host.docker.internal:9001", [
+            list($isSuccess, $hostName) = (new Client('kratos-tiway.user'))->getClient();
+            if (!$isSuccess) {
+                throw new \Exception('grpc connect failed');
+            }
+            self::$client = new UserClient($hostName, [
                 "credentials" => ChannelCredentials::createInsecure()
             ]);
         }
@@ -27,7 +35,11 @@ class GrpcUser
     }
 
     /**
+     * @param string $nickname
+     * @param string $mobile
+     * @param string $password
      * @return array
+     * @throws \Exception
      */
     public static function CreateUser(string $nickname, string $mobile, string $password)
     {
@@ -58,6 +70,7 @@ class GrpcUser
     /**
      * @param int $id
      * @return array
+     * @throws \Exception
      */
     public static function getUserById(int $id)
     {
@@ -86,6 +99,7 @@ class GrpcUser
     /**
      * @param string $mobile
      * @return array
+     * @throws \Exception
      */
     public static function getUserByMobile(string $mobile)
     {
@@ -115,6 +129,7 @@ class GrpcUser
      * @param string $mobile
      * @param string $password
      * @return bool
+     * @throws \Exception
      */
     public static function checkoutUserPassword(string $mobile, string $password)
     {
